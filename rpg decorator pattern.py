@@ -8,7 +8,7 @@ class Character:
         self.defense = defense
         self.armor = armor
         self.sword = sword
-
+#test
     def get_stats(self):
         return f"Character: {self.name}, Health: {self.health}, Attack: {self.attack}, Defense: {self.defense}"
 
