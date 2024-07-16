@@ -1,4 +1,4 @@
-
+from abc import ABC, abstractmethod
 
 class Character:
     def __init__(self, name, health, attack, defense, armor, sword):
@@ -8,6 +8,7 @@ class Character:
         self.defense = defense
         self.armor = armor
         self.sword = sword
+
 
     def get_stats(self):
         return f"Character: {self.name}, Health: {self.health}, Attack: {self.attack}, Defense: {self.defense}"
