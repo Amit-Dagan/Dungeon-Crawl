@@ -1,5 +1,5 @@
 from Equipment import Sword, Armor, FireDecorator, IceDecorator
-from Character import Character
+from Character import Character, HeavyAttack, MeleeAttack, DodgeDefense, ShieldDefense
 
 # Example usage
 sword = Sword("Sword", 0, 10, 0)
@@ -7,18 +7,28 @@ armor = Armor("Armor", 0, 0, 5)
 fire_sword = FireDecorator(sword)
 fire_armor = FireDecorator(armor)
 fire_and_ice_armor = IceDecorator(fire_armor)
-character_a = Character("Warrior", 100, 10, 5, sword=sword, armor=fire_armor)
-character_b = Character("Warrior", 100, 10, 5,
-                        sword=fire_sword, armor=fire_and_ice_armor)
+character_a = Character(
+    "Warrior", 100, 10, 5, sword=sword, armor=fire_armor,
+    attack_strategy=MeleeAttack(), defense_strategy=DodgeDefense())
+character_b = Character(
+    "Warrior", 100, 10, 5,
+    sword=fire_sword, armor=fire_and_ice_armor,
+    attack_strategy=HeavyAttack(), defense_strategy=ShieldDefense())
 
-# Should show character stats without sword enhancements
+
 print(character_a.get_stats())
-print(f"Character Attack with Sword: {character_a.get_attack()}")
-print(f"Character Defense with Armor: {character_a.get_defense()}")
+print('\n')
+print(f"Character Attack with {character_a.sword.get_name()} and deals {
+      character_a.attack_action(14)}")
+print(f"Character Defense with {character_a.armor.get_name()} and takes {
+      character_a.defense_action(15)} damage")
 
-# Should show character stats with fire sword enhancements
+print('\n')
+
 print(character_b.get_stats())
-print(f"Character Attack with {character_b.sword.get_name()}: {
-      character_b.get_attack()}")
-print(f"Character Defense with {character_b.armor.get_name()}: {
-      character_b.get_defense()}")
+print('\n')
+
+print(f"Character Attack with {character_b.sword.get_name()} and deals {
+      character_b.attack_action(14)}")
+print(f"Character Defense with {character_b.armor.get_name()} and takes {
+      character_b.defense_action(15)} damage")
