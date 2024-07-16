@@ -1,3 +1,8 @@
 # Dungeon-Crawl
-Dungeon Crawl game as a Decorator pattern exercise
-![image](https://github.com/user-attachments/assets/2121d4e0-4f2f-4e43-8bd0-1a2b9697b858)
+Dungeon Crawl game as a design pattern exercise
+
+Equipment as a Decorator pattern
+![image](https://github.com/user-attachments/assets/3a0e854e-d0a2-455b-aa2d-1491689411c1)
+
+Charecter as a Strategy pattern
+![image](https://github.com/user-attachments/assets/ffda42eb-25d7-4571-8de8-db46533728ee)
