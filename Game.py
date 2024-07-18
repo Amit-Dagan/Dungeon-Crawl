@@ -1,7 +1,13 @@
 from Equipment import Sword, Armor, FireDecorator, IceDecorator
 from Character import Character, HeavyAttack, MeleeAttack, DodgeDefense, ShieldDefense
+from dungeon import Dungeon, Room, EncounterRoomFactory, MonsterRoomFactory
 
 # Example usage
+room_factories = [EncounterRoomFactory, MonsterRoomFactory]
+dungeon = Dungeon("First lavel", room_factories)
+dungeon.create_room()
+
+
 sword = Sword("Sword", 0, 10, 0)
 armor = Armor("Armor", 0, 0, 5)
 fire_sword = FireDecorator(sword)
