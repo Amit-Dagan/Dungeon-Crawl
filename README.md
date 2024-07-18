@@ -6,3 +6,7 @@ Equipment as a Decorator pattern
 
 Charecter as a Strategy pattern
 ![image](https://github.com/user-attachments/assets/ffda42eb-25d7-4571-8de8-db46533728ee)
+
+Rooms as a Factory pattern
+
+![image](https://github.com/user-attachments/assets/53d474bb-8806-4066-835c-0129426c62b8)
