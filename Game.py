@@ -6,7 +6,8 @@ from dungeon import Dungeon, Room, EncounterRoomFactory, MonsterRoomFactory
 room_factories = [EncounterRoomFactory, MonsterRoomFactory]
 dungeon = Dungeon("First lavel", room_factories)
 dungeon.create_room()
-
+for room in dungeon.rooms:
+    print(room.name)
 
 sword = Sword("Sword", 0, 10, 0)
 armor = Armor("Armor", 0, 0, 5)
@@ -38,3 +39,11 @@ print(f"Character Attack with {character_b.sword.get_name()} and deals {
       character_b.attack_action(14)}")
 print(f"Character Defense with {character_b.armor.get_name()} and takes {
       character_b.defense_action(15)} damage")
+
+
+print("""
+       ____
+      |    |_
+      | @   _
+      |____|
+      """)
