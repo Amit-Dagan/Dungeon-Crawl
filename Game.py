@@ -1,4 +1,4 @@
-from Equipment import Sword, Armor, FireDecorator, IceDecorator
+from Equipment import Sword, Armor, FireDecorator, ColdDecorator
 from Character import Character, HeavyAttack, MeleeAttack, DodgeDefense, ShieldDefense
 from dungeon import Dungeon, Room, EncounterRoomFactory, MonsterRoomFactory
 
@@ -13,7 +13,7 @@ sword = Sword("Sword", 0, 10, 0)
 armor = Armor("Armor", 0, 0, 5)
 fire_sword = FireDecorator(sword)
 fire_armor = FireDecorator(armor)
-fire_and_ice_armor = IceDecorator(fire_armor)
+fire_and_ice_armor = ColdDecorator(fire_armor)
 character_a = Character(
     "Warrior", 100, 10, 5, sword=sword, armor=fire_armor,
     attack_strategy=MeleeAttack(), defense_strategy=DodgeDefense())
@@ -41,9 +41,34 @@ print(f"Character Defense with {character_b.armor.get_name()} and takes {
       character_b.defense_action(15)} damage")
 
 
-print("""
-       ____
-      |    |_
-      | @   _
-      |____|
-      """)
+"""
+enter a room
+monster room
+choose a monster
+choose an attack
+while monster alive:
+    attack roll:
+        success:
+            attack action
+            dead?:
+                treature
+        failure -> maybe something?  
+
+    each monster attack:
+        success:
+            attack action
+            charecter dead?:
+                End
+        failure -> maybe something?   
+    
+        
+enter a room
+encounet room
+print info
+choose an action
+roll:
+    success:
+        treature
+    failure:
+        something     
+"""

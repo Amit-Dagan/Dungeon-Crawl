@@ -14,19 +14,34 @@ class Character:
         self.sword = sword
         self.attack_strategy = attack_strategy
         self.defense_strategy = defense_strategy
+        self.resistence = {
+            'poison': 0,
+            'fire': 0,
+            'cold': 0
+        }
+        self.status = {
+            'poison': 0,
+            'fire': 0,
+            'cold': 0
+        }
+
+
 
     def get_stats(self):
-        return f"Character: {self.name}, Health: {self.health}, Attack: {self.attack}, Defense: {self.defense}"
+        return f"Character: {self.name}, Health: {self.health}, Attack: {self.attack}, Defense: {self.defense} \n Resistance: {self.get_resistence('cold')}"
+
+    def get_resistence(self, type):
+        return self.resistence[type] + self.armor.get_resistence(type)
 
     def get_attack(self):
         return self.attack + self.sword.get_attack() + self.armor.get_attack()
+
 
     def get_defense(self):
         return self.defense + self.sword.get_defense() + self.armor.get_defense()
 
     def attack_action(self, ac):
         print(type(self.attack_strategy))
-    # this is not working, how can i know what strategy im using?
         if (isinstance(self.attack_strategy, HeavyAttack)):
             print("the monster in shock!")
         elif (isinstance(self.attack_strategy, MeleeAttack)):

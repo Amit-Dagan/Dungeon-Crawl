@@ -6,7 +6,11 @@ class Equipment(ABC):
         self.health = health
         self.attack = attack
         self.defense = defense
-
+        self.resistence = {
+            'poison': 0,
+            'fire': 0,
+            'cold': 0
+        }
     def get_stats(self):
         return f"Equipment: {self.name}, Health: {self.health}, Attack: {self.attack}, Defense: {self.defense}"
 
@@ -18,6 +22,9 @@ class Equipment(ABC):
 
     def get_name(self):
         return self.name
+
+    def get_resistence(self, type):
+        return self.resistence[type]
 
 
 class EquipmentDecorator(Equipment):
@@ -34,17 +41,22 @@ class EquipmentDecorator(Equipment):
     def get_name(self):
         return self.equipment.get_name() + ' of ' + self.name
 
+    def get_resistence(self, type):
+        return self.resistence[type] + self.equipment.get_resistence(type)
+
 
 class FireDecorator(EquipmentDecorator):
     def __init__(self, equipment):
         super().__init__("Fire", 0, 3, 0, equipment)
         self.equipment = equipment
+        self.resistence['fire'] = 1
 
 
-class IceDecorator(EquipmentDecorator):
+class ColdDecorator(EquipmentDecorator):
     def __init__(self, equipment):
-        super().__init__("Ice", 0, 0, 3, equipment)
+        super().__init__("Cold", 0, 0, 3, equipment)
         self.equipment = equipment
+        self.resistence['cold'] = 1
 
 
 class Sword(Equipment):
