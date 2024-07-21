@@ -1,31 +1,31 @@
-from abc import ABC, abstractmethod
+from abc import ABC, ABCMeta, abstractmethod
 from random import randint
-from Character import Character
+from typing import Callable
+from Character import *
 from dice import die
 
-class Monster(ABC):
-    def __init__(
-            self, name, health, attack, defense,
-            attack_strategy,):
-        self.name = name
-        self.health = health
-        self.attack = attack
-        self.defense = defense
-        self.attack_strategy = attack_strategy
 
-    def get_stats(self):
-        return f"Character: {self.name}, Health: {self.health}, Attack: {self.attack}, Defense: {self.defense}"
+class Monster(Character, metaclass=ABCMeta):
+    def __init__(self, name, health, attack, defense, attack_strategy: AttackFn):
+        super().__init__(name, health, attack, defense,attack_strategy)
 
-    def get_attack(self):
-        return self.attack 
 
-    def get_defense(self):
-        return self.defense
+class Goblin(Monster):
+    def __init__(self):
+        super().__init__(
+            name= "Rat", health=5, attack=5, 
+            defense=5, attack_strategy= poison_dart)
 
-    def attack_action(self, ac):
-        print(type(self.attack_strategy))
-        return self.get_attack()*self.attack_strategy.execute(self.attack, ac=ac)
 
-def PoisonDart(character: Character):
-    character.health -= die(4)
-    character.status['poison'] = 2
+class Rat(Monster):
+    def __init__(self):
+        super().__init__(
+            name="Rats", health=5, attack=5,
+            defense=3, attack_strategy=bite)
+
+
+class Bat(Monster):
+    def __init__(self):
+        super().__init__(
+            name="Bats", health=5, attack=3,
+            defense=5, attack_strategy=bite)

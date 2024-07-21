@@ -1,4 +1,14 @@
+from abc import ABC
 from random import choice
+from monster import *
+
+class Room(ABC):
+    def __init__(
+            self, name, treature):
+        self.name = name
+        self.treature = treature
+
+
 
 class Dungeon:
     def __init__(
@@ -7,15 +17,11 @@ class Dungeon:
         self.room_factories = room_factories
         self.rooms = []
     
-    def create_room(self):
+    def create_room(self) -> Room:
         factory = choice(self.room_factories)
-        self.rooms.append(factory())
-
-class Room:
-    def __init__(
-            self, name, treature):
-        self.name = name
-        self.treature = treature
+        room = factory()
+        self.rooms.append(room)
+        return room
 
 class EncounterRoom(Room):
     def __init__(self, name, info, treature):
@@ -45,5 +51,7 @@ def MonsterRoomFactory() -> MonsterRoom:
     name = "Scary Room"
     monster = "Goblin"
     treature = "10 gold"
-
-    return MonsterRoom(name, monster, treature)
+    rat1 = Rat()
+    rat2 = Rat()
+    monsters = [rat1, rat2]
+    return MonsterRoom(name, monsters, treature)
