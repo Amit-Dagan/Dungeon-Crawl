@@ -1,5 +1,8 @@
 from abc import ABC, abstractmethod
 
+from Character import Character
+from dice import die
+
 class Equipment(ABC):
     def __init__(self, name, health, attack, defense):
         self.name = name
@@ -60,10 +63,18 @@ class ColdDecorator(EquipmentDecorator):
 
 
 class Sword(Equipment):
-    pass
+    def __init__(self):
+        super().__init__("Sword", 0, 8, 0)
+    def sword_attack(self, character: Character, attack_bonus):
+        attack_roll = die(20) + attack_bonus
+        if (attack_roll >= character.get_defense):
+            character.health -= die(self.get_attack())
 
 
 class Armor(Equipment):
-    pass
+    def __init__(self):
+        super().__init__("Armor", 0, 8, 0)
+
+
 
 

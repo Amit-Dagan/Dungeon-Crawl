@@ -27,10 +27,7 @@ class Character:
 
 
     def get_stats(self):
-        return f"Character: {self.name}, Health: {self.health}, Attack: {self.attack}, Defense: {self.defense} \n Resistance: {self.get_resistence('cold')}"
-
-    def get_resistence(self, type):
-        return self.resistence[type] 
+        return f"Character: {self.name}, Health: {self.health}, Attack: {self.attack}, Defense: {self.defense} \n"
 
     def get_attack(self):
         return self.attack 
@@ -39,7 +36,7 @@ class Character:
         return self.defense 
     
     def get_resistence(self, type):
-        base_resistance = self.get_resistence(type)
+        base_resistance = self.resistence[type]
         armor_resistance = self.armor.get_resistance(type) if self.armor else 0
         seord_resistance = self.sword.get_resistance(type) if self.sword else 0
 
@@ -55,13 +52,14 @@ AttackFn = Callable[[Character, int], None]
 
 def poison_dart(character: Character, attack_bonus):
     attack_roll = die(20) + attack_bonus
-    if (attack_roll >= character.get_defense):
+    if (attack_roll >= character.get_defense()):
         character.health -= die(4)
         character.status['poison'] = 2
 
 
 def bite(character: Character, attack_bonus):
     attack_roll = die(20) + attack_bonus
-    if (attack_roll >= character.get_defense):
-        character.health -= die(4)
-        character.status['poison'] = 2
+    if (attack_roll >= character.get_defense()):
+        character.health -= die(6)
+
+

@@ -1,6 +1,7 @@
-from Equipment import Sword, Armor, FireDecorator, ColdDecorator
-from Character import Character, HeavyAttack, MeleeAttack, DodgeDefense, ShieldDefense
+from Equipment import *
+from Character import *
 from dungeon import *
+from Player import *
 
 
 def fight(monsters, character) -> bool:
@@ -19,9 +20,9 @@ def fight(monsters, character) -> bool:
 
         for init in initiative:
             print(f'{init[0]}, {init[1].name}')
-            if type(init[1]) is Monster:
+            if isinstance(init[1], Monster):
                 init[1].attack_action(character)
-            if type(init[1]) is Character:
+            if isinstance(init[1], Player):
                 print(f"you are fighting {monster_names}")
                 print("choose a monster to attack")
                 x = input()
@@ -34,26 +35,14 @@ def fight(monsters, character) -> bool:
 room_factories = [EncounterRoomFactory, MonsterRoomFactory]
 dungeon = Dungeon("First lavel", room_factories)
 
-sword = Sword("Sword", 0, 10, 0)
-armor = Armor("Armor", 0, 0, 5)
-fire_sword = FireDecorator(sword)
-fire_armor = FireDecorator(armor)
-fire_and_ice_armor = ColdDecorator(fire_armor)
-character_a = Character(
-    "Warrior", 100, 10, 5, sword=sword, armor=fire_armor,
-    attack_strategy=MeleeAttack(), defense_strategy=DodgeDefense())
-character_b = Character(
-    "Warrior", 100, 10, 5,
-    sword=fire_sword, armor=fire_and_ice_armor,
-    attack_strategy=HeavyAttack(), defense_strategy=ShieldDefense())
-
+player = Fighter("ser Holigan")
 
 while True:
     current_room = dungeon.create_room()
     match current_room:
         case MonsterRoom():
             print(current_room.name)
-            if (fight(current_room.monsters, character_a)):
+            if (fight(current_room.monsters, player)):
                 print("hey")
                 # choose_treature()
             # break

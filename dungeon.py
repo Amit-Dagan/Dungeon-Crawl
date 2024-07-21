@@ -49,7 +49,6 @@ def EncounterRoomFactory() -> EncounterRoom:
 
 def MonsterRoomFactory() -> MonsterRoom:
     name = "Scary Room"
-    monster = "Goblin"
     treature = "10 gold"
     rat1 = Rat()
     rat2 = Rat()
