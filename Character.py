@@ -43,23 +43,39 @@ class Character:
         return base_resistance + armor_resistance + seord_resistance
 
     def attack_action(self, character):
-        print(type(self.attack_strategy))
-        self.attack_strategy(character, self.attack)
+        print(f"{self.name} attack!")
+        self.attack_strategy(character=character, attack_bonus=self.attack)
 
 
 AttackFn = Callable[[Character, int], None]
 
 
 def poison_dart(character: Character, attack_bonus):
+    print(f"He uses Poison Dart on {character.name}")
     attack_roll = die(20) + attack_bonus
     if (attack_roll >= character.get_defense()):
-        character.health -= die(4)
-        character.status['poison'] = 2
+        print(f"It secceeds!")
+        dmg = die(4)
+        print(f"{character.name} health = {
+              character.health} - {dmg} = {character.health - dmg}")
 
+        character.health -= dmg
+        print(f"{character.name} is poisend!")
+        character.status['poison'] = 2
+    else:
+        print("It dose not secceeds!")
 
 def bite(character: Character, attack_bonus):
+    print(f"He uses Bite on {character.name}")
     attack_roll = die(20) + attack_bonus
     if (attack_roll >= character.get_defense()):
-        character.health -= die(6)
+        print(f"It secceeds!")
+        dmg = die(6)
+        print(f"{character.name} health = {
+              character.health} - {dmg} = {character.health - dmg}")
+
+        character.health -= dmg
+    else:
+        print("It dose not secceeds!")
 
 

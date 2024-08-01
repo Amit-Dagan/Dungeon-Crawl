@@ -2,52 +2,159 @@ from Equipment import *
 from Character import *
 from dungeon import *
 from Player import *
+from screen import *
 
 
-def fight(monsters, character) -> bool:
-    character_initiative = [die(20), character]
+class Game:
+    def __init__(self, stdscr):
+        self.screen = Screen(stdscr)
+        classes = {"Fighter": Fighter, "Foghter": Fighter}
+        self.player = self.screen.choose("choose a hero", classes)("name")
+        self.dungeon = Dungeon("First level")
+        self.current_room = None
+
+    def explore(self):
+        self.current_room = self.dungeon.create_room()
+        match self.current_room:
+            case MonsterRoom():
+                self.fight()
+            case EncounterRoom():
+                self.encounter()
+
+    def encounter(self):
+        self.screen.animation_write_main(self.current_room.name)
+
+    def fight(self):
+        self.screen.animation_write_main(self.current_room.name)
+
+def main(stdscr):
+
+    game = Game(stdscr)
+    game.explore()
+
+
+def fight(monsters, player) -> bool:
+    character_initiative = [die(20), player]
     monster_initiative = [[die(20), monster] for monster in monsters]
     initiative = monster_initiative + [character_initiative]
     initiative.sort(reverse=True, key=lambda x: x[0])
+    monsters_health = sum([monster.health for monster in monsters])
 
-    print(f'initiative order')
-
-    while (monsters):
+    while (monsters_health > 0):
         monster_names = {i: f'{monster.name}, health {
             monster.health}' for i, monster in enumerate(monsters)}
         monster_info = {i: f'{monster.get_stats()}' for i,
                         monster in enumerate(monsters)}
 
-        for init in initiative:
-            print(f'{init[0]}, {init[1].name}')
-            if isinstance(init[1], Monster):
-                init[1].attack_action(character)
-            if isinstance(init[1], Player):
+        for roll, entity in initiative:
+            screen.animation_write_main(f'{roll}, {entity.name}')
+            if isinstance(entity, Monster):
+                entity.attack_action(player)
+            if isinstance(entity, Player):
                 print(f"you are fighting {monster_names}")
                 print("choose a monster to attack")
                 x = input()
-                character.attack_action(monsters[int(x)-1])
+                player.attack_action(monsters[int(x)-1])
 
+        monsters_health = sum([monster.health for monster in monsters])
     return True
 
 
-# Example usage
-room_factories = [EncounterRoomFactory, MonsterRoomFactory]
-dungeon = Dungeon("First lavel", room_factories)
+if __name__ == "__main__":
 
-player = Fighter("ser Holigan")
+    wrapper(main)
 
-while True:
-    current_room = dungeon.create_room()
-    match current_room:
-        case MonsterRoom():
-            print(current_room.name)
-            if (fight(current_room.monsters, player)):
-                print("hey")
-                # choose_treature()
-            # break
-        case EncounterRoom():
-            print(current_room.name)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# from Equipment import *
+# from Character import *
+# from dungeon import *
+# from Player import *
+# from screen import *
+
+
+# def main():
+
+#     room_factories = [EncounterRoomFactory, MonsterRoomFactory]
+#     dungeon = Dungeon("First lavel", room_factories)
+
+#     player = Fighter("Ser Holigan")
+
+#     while True:
+#         current_room = dungeon.create_room()
+#         match current_room:
+#             case MonsterRoom():
+#                 print(current_room.describe())
+#                 if (fight(current_room.monsters, player)):
+#                     print("hey")
+#                     # choose_treature()
+#                 # break
+#             case EncounterRoom():
+#                 print(current_room.name)
+
+
+
+
+# def fight(monsters, player) -> bool:
+#     character_initiative = [die(20), player]
+#     monster_initiative = [[die(20), monster] for monster in monsters]
+#     initiative = monster_initiative + [character_initiative]
+#     initiative.sort(reverse=True, key=lambda x: x[0])
+#     monsters_health = sum([monster.health for monster in monsters])
+
+#     while (monsters_health > 0):
+#         monster_names = {i: f'{monster.name}, health {
+#             monster.health}' for i, monster in enumerate(monsters)}
+#         monster_info = {i: f'{monster.get_stats()}' for i,
+#                         monster in enumerate(monsters)}
+
+#         for roll, entity in initiative:
+#             print(f'{roll}, {entity.name}')
+#             if isinstance(entity, Monster):
+#                 entity.attack_action(player)
+#             if isinstance(entity, Player):
+#                 print(f"you are fighting {monster_names}")
+#                 print("choose a monster to attack")
+#                 x = input()
+#                 player.attack_action(monsters[int(x)-1])
+
+#         monsters_health = sum([monster.health for monster in monsters])
+#     return True
+
+
+
+# if __name__ == "__main__":
+
+#     main()
 
 
 """

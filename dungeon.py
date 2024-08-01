@@ -12,9 +12,9 @@ class Room(ABC):
 
 class Dungeon:
     def __init__(
-            self, name, room_factories):
+            self, name):
         self.name = name
-        self.room_factories = room_factories
+        self.room_factories = [EncounterRoomFactory, MonsterRoomFactory]
         self.rooms = []
     
     def create_room(self) -> Room:
@@ -34,9 +34,14 @@ class EncounterRoom(Room):
 class MonsterRoom(Room):
     def __init__(self, name, monsters, treature):
         super().__init__(name, treature)
+        num_of_monsters = randint(1, 3)
+        monsters = [MonsterFactory() for _ in range(num_of_monsters)]
         self.monsters = monsters
     def describe(self):
-        return "This room is filled with monsters."
+        describtion = f"""
+        This room is filled with {len(self.monsters)} monsters.
+        """
+        return describtion
 
 
 

@@ -67,9 +67,15 @@ class Sword(Equipment):
         super().__init__("Sword", 0, 8, 0)
     def sword_attack(self, character: Character, attack_bonus):
         attack_roll = die(20) + attack_bonus
-        if (attack_roll >= character.get_defense):
-            character.health -= die(self.get_attack())
+        if (attack_roll >= character.get_defense()):
+            print(f"It secceeds!")
+            dmg = die(self.attack)
+            print(f"{character.name} health = {
+                character.health} - {dmg} = {character.health - dmg}")
+            character.health -= dmg
 
+        else:
+                print("It dose not secceeds!")
 
 class Armor(Equipment):
     def __init__(self):

@@ -1,5 +1,5 @@
 from abc import ABC, ABCMeta, abstractmethod
-from random import randint
+import random
 from typing import Callable
 from Character import *
 from dice import die
@@ -29,3 +29,7 @@ class Bat(Monster):
         super().__init__(
             name="Bats", health=5, attack=3,
             defense=5, attack_strategy=bite)
+
+def MonsterFactory() -> Monster:
+    monsters = [Goblin, Rat, Bat]
+    return random.choice(monsters)()
