@@ -1,7 +1,8 @@
 import curses
 from curses import wrapper
 import time
-
+from dungeon import EncounterRoom
+from dice import *
 
 class Screen:
     def __init__(self, stdscr):
@@ -78,6 +79,24 @@ class Screen:
             self.animation_write_main("please chose only from those options")
             key = self.stdscr.getkey()
         return res[i]
+
+    def show_encounter(self, encounter: EncounterRoom):
+        self.animation_write_main(encounter.info)
+        s = ''
+
+        for i, option in enumerate(encounter.options):
+            s += f"{i} - to {option["text"]} ({option["type"]})\n "
+
+        self.animation_write_second(s)
+        key = self.stdscr.getkey()
+        while (int(key) > i):
+            self.animation_write_main("please chose only from those options")
+            key = self.stdscr.getkey()
+        return encounter.options[i]
+        
+
+
+
 
 
 

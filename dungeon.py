@@ -24,19 +24,20 @@ class Dungeon:
         return room
 
 class EncounterRoom(Room):
-    def __init__(self, name, info, treature):
+    def __init__(self, name, info, treature, options):
         super().__init__(name, treature)
         self.info = info
+        self.name = name
+        self.options = options
     def describe(self):
-        return "This room is filled with traps."
+        return self.info
 
 
 class MonsterRoom(Room):
-    def __init__(self, name, monsters, treature):
+    def __init__(self, name, treature):
         super().__init__(name, treature)
         num_of_monsters = randint(1, 3)
-        monsters = [MonsterFactory() for _ in range(num_of_monsters)]
-        self.monsters = monsters
+        self.monsters = [MonsterFactory() for _ in range(num_of_monsters)]
     def describe(self):
         describtion = f"""
         This room is filled with {len(self.monsters)} monsters.
@@ -49,13 +50,36 @@ def EncounterRoomFactory() -> EncounterRoom:
     name = "Dark Room"
     info = "Old man in the room"
     treature = "old ring"
-    return EncounterRoom(name, info, treature)
+    option1 = {
+        "text": "run away", 
+        "type": "Dexterity", 
+        "DC": 12,
+        "succeed": "you got away!",
+        "fail": "he got you, you loose somthing",
+        "treature": None
+        }
+    option2 = {
+        "text": "try to persuade",
+        "type": "Charisma",
+        "DC": 12,
+        "succeed": "he likes you!",
+        "fail": "he dosent likes you!",
+        "treature": None
+    }
+    option3 = {
+        "text": "try to intinidate him",
+        "type": "Charisma",
+        "DC": 15,
+        "succeed": "he got scared and ran away!",
+        "fail": "he lugh at you",
+        "treature": None
+    }
+    options = [option1, option2, option3]
 
+    return EncounterRoom(name, info, treature, options)
 
 def MonsterRoomFactory() -> MonsterRoom:
     name = "Scary Room"
     treature = "10 gold"
-    rat1 = Rat()
-    rat2 = Rat()
-    monsters = [rat1, rat2]
-    return MonsterRoom(name, monsters, treature)
+
+    return MonsterRoom(name, treature)

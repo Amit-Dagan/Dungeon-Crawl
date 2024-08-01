@@ -8,7 +8,7 @@ from screen import *
 class Game:
     def __init__(self, stdscr):
         self.screen = Screen(stdscr)
-        classes = {"Fighter": Fighter, "Foghter": Fighter}
+        classes = {"Fighter": Fighter, "Monk": Fighter, "Wizard": Fighter}
         self.player = self.screen.choose("choose a hero", classes)("name")
         self.dungeon = Dungeon("First level")
         self.current_room = None
@@ -22,7 +22,7 @@ class Game:
                 self.encounter()
 
     def encounter(self):
-        self.screen.animation_write_main(self.current_room.name)
+        self.screen.show_encounter(self.current_room)
 
     def fight(self):
         self.screen.animation_write_main(self.current_room.name)
