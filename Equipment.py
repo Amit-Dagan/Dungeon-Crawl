@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import random
+from typing import Type
 
 from Character import Character
 from dice import die
@@ -114,28 +115,35 @@ class Armor(Equipment):
         super().__init__("Armor", 0, 8, 0)
 
 
-def EquipmentFactory() -> Equipment:
-    equipments = [Armor, Sword]
-    return random.choice(equipments)()
-
-
-def RareEquipmentFactory() -> Equipment:
+def EquipmentFactory(type = "normal") -> Equipment:
     equipments = [Armor, Sword]
     decorators = [ColdDecorator, FireDecorator, MightDecorator, LightDecorator]
     equipment = random.choice(equipments)()
-    return random.choice(decorators)(equipment)
+    if (type == "rare"):
+        equipment = random.choice(decorators)(equipment)
+    elif (type == "epic"):
+        decorators_copy = decorators[:]  # Copy to avoid duplicates
+        decorator1: Type[Equipment] = random.choice(decorators_copy)
+        equipment = decorator1(equipment)
+        decorators_copy.remove(decorator1)
+        decorator2: Type[Equipment] = random.choice(decorators_copy)
+        equipment = decorator2(equipment)
 
-
-def EpichEquipmentFactory() -> Equipment:
-    equipments = [Armor, Sword]
-    decorators = [ColdDecorator, FireDecorator, MightDecorator, LightDecorator]
-    equipment = random.choice(equipments)()
-    equipment = random.choice(decorators)(equipment)
-    return random.choice(decorators)(equipment)
+    return equipment
 
 
 
 ### testing ###
+# normal_eq = EquipmentFactory()
+# print(normal_eq.get_name())
+
+# rare_eq = EquipmentFactory(type="rare")
+# print(rare_eq.get_name())
+
+# epic_eq = EquipmentFactory(type="epic")
+# print(epic_eq.get_name())
+
+
 
 # sword = Sword()
 # print(sword.get_name())

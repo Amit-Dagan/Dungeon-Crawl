@@ -3,7 +3,7 @@ from curses import wrapper
 import time
 from dungeon import EncounterRoom
 from dice import *
-
+from Player import Player
 
 class Screen:
     def __init__(self, stdscr):
@@ -65,6 +65,20 @@ class Screen:
     def animation_write_second(self, text):
         self._write_text(self.second_window, text, animated=True)
 
+    def write_hero(self, text):
+        self._write_text(self.hero_window, text)
+
+    def animation_write_hero(self, text):
+        self._write_text(self.hero_window, text, animated=True)
+
+    def show_player(self, player: Player):
+    
+        self.write_hero(player.get_stats())
+
+
+
+
+
     def choose(self, text, options):
         self.animation_write_main(text)
         s = ''
@@ -75,7 +89,9 @@ class Screen:
             res.append(options[option])
         self.animation_write_second(s)
         key = self.stdscr.getkey()
-        while (int(key) > i):
+        valid_choices = [str(i) for i in range(1, len(options) + 1)]
+
+        while (key not in valid_choices):
             self.animation_write_main("please chose only from those options")
             key = self.stdscr.getkey()
         return res[i-1]
@@ -93,17 +109,22 @@ class Screen:
         while (int(key) > i):
             self.animation_write_main("please chose only from those options")
             key = self.stdscr.getkey()
-        return encounter.options[i]
+        return encounter.options[i-1]
         
 
 def main(stdscr):
     screen = Screen(stdscr)
     screen.write_main("Hello, Main Window!")
+    time.sleep(1.0)
     screen.write_second("Hello, Second Window!")
+    time.sleep(1.0)
+
     screen.animation_write_main("Animating Main Window")
     screen.animation_write_second("Animating Second Window")
-    choice = screen.choose("Choose an option:", [
-                           "Option 1", "Option 2", "Option 3"])
+    screen.animation_write_hero("herp")
+
+    choice = screen.choose("Choose an option:", {
+                           "Option 1": "asd", "Option 2": "Asd", "Option 3": "Asd"})
     screen.write_main(f"You chose: {choice}")
 
 

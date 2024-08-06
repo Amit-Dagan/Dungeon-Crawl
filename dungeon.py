@@ -8,7 +8,9 @@ class Room(ABC):
         self.name = name
         self.treature = treature
 
-
+    @abstractmethod
+    def describe(self):
+        pass
 
 class Dungeon:
     def __init__(
@@ -29,15 +31,20 @@ class EncounterRoom(Room):
         self.info = info
         self.name = name
         self.options = options
+
     def describe(self):
-        return self.info
+        description = f"{self.info}\nOptions:"
+        for i, option in enumerate(self.options, start=1):
+            description += f"\n{i}. {option['text']
+                                     } (DC {option['DC']} {option['type']})"
+        return description
+    
 
 
 class MonsterRoom(Room):
-    def __init__(self, name, treature):
+    def __init__(self, name, treature, monsters):
         super().__init__(name, treature)
-        num_of_monsters = randint(1, 3)
-        self.monsters = [MonsterFactory() for _ in range(num_of_monsters)]
+        self.monsters = monsters
     def describe(self):
         describtion = f"""
         This room is filled with {len(self.monsters)} monsters.
@@ -51,9 +58,9 @@ def EncounterRoomFactory() -> EncounterRoom:
     info = "Old man in the room"
     treature = "old ring"
     option1 = {
-        "text": "run away", 
+        "text": "try to run away",
         "type": "Dexterity", 
-        "DC": 12,
+        "DC": randint(8, 14),
         "succeed": "you got away!",
         "fail": "he got you, you loose somthing",
         "treature": None
@@ -61,7 +68,7 @@ def EncounterRoomFactory() -> EncounterRoom:
     option2 = {
         "text": "try to persuade",
         "type": "Charisma",
-        "DC": 12,
+        "DC": randint(8, 14),
         "succeed": "he likes you!",
         "fail": "he dosent likes you!",
         "treature": None
@@ -69,7 +76,7 @@ def EncounterRoomFactory() -> EncounterRoom:
     option3 = {
         "text": "try to intinidate him",
         "type": "Charisma",
-        "DC": 15,
+        "DC": randint(8, 14),
         "succeed": "he got scared and ran away!",
         "fail": "he lugh at you",
         "treature": None
@@ -78,8 +85,9 @@ def EncounterRoomFactory() -> EncounterRoom:
 
     return EncounterRoom(name, info, treature, options)
 
+
 def MonsterRoomFactory() -> MonsterRoom:
     name = "Scary Room"
     treature = "10 gold"
-
-    return MonsterRoom(name, treature)
+    monsters = [MonsterFactory() for _ in range(randint(1, 3))]
+    return MonsterRoom(name, treature, monsters)

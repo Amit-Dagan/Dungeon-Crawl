@@ -9,9 +9,15 @@ class Player(Character, metaclass=ABCMeta):
             attack_strategy, dextirity, wisdom, charisma):
         super().__init__(name, health, attack, defense,
                        attack_strategy)
-        self.dextirity = dextirity
+        self.dexterity = dextirity
         self.wisdom = wisdom
         self.charisma = charisma
+        self.gold = 0
+        self.inventory = []
+
+        def get_inventory(self):
+            return self.inventory
+            
 
 class Fighter(Player):
     def __init__(self, name):
@@ -26,6 +32,9 @@ class Fighter(Player):
 
     def update_armor(self, armor):
         self.armor = armor
+
+    def get_stats(self):
+        return super().get_stats() + f"\n sword = {self.sword.get_name()} \n armor = {self.armor.get_name()}"
 
     def __name__():
         return "Fighter"

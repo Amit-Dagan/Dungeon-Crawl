@@ -9,13 +9,13 @@ class Game:
     def __init__(self, stdscr):
         self.screen = Screen(stdscr)
         classes = {"Fighter": Fighter, "Monk": Fighter, "Wizard": Fighter}
-        self.player = self.screen.choose("choose a hero", classes)("name")
+        self.player:Player = self.screen.choose("choose a hero", classes)("name")
         self.dungeon = Dungeon("First level")
         self.current_room = None
         self.town = Town()
 
     def explore(self):
-        
+        self.screen.show_player(self.player)
         #self.current_room = self.dungeon.create_room()
         self.current_room = EncounterRoomFactory()
         match self.current_room:
@@ -26,7 +26,21 @@ class Game:
 
     def encounter(self):
         chosen_option = self.screen.show_encounter(self.current_room)
-        self.screen.animation_write_main(chosen_option["fail"])
+        roll = die(20)
+        match chosen_option["type"]:
+            case "charisma":
+                roll = roll + self.player.charisma
+
+            case "dexterity":
+                roll = roll + self.player.dexterity
+
+            case "wisdom":
+                roll = roll + self.player.wisdom
+
+        if (roll >= chosen_option["DC"]):
+            self.screen.animation_write_main(chosen_option["succeed"])
+
+        else: self.screen.animation_write_main(chosen_option["fail"])
 
     def fight(self):
         self.screen.animation_write_main(self.current_room.name)
