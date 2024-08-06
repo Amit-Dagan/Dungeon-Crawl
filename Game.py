@@ -3,7 +3,7 @@ from Character import *
 from dungeon import *
 from Player import *
 from screen import *
-
+from town import *
 
 class Game:
     def __init__(self, stdscr):
@@ -12,9 +12,12 @@ class Game:
         self.player = self.screen.choose("choose a hero", classes)("name")
         self.dungeon = Dungeon("First level")
         self.current_room = None
+        self.town = Town()
 
     def explore(self):
-        self.current_room = self.dungeon.create_room()
+        
+        #self.current_room = self.dungeon.create_room()
+        self.current_room = EncounterRoomFactory()
         match self.current_room:
             case MonsterRoom():
                 self.fight()
@@ -22,7 +25,8 @@ class Game:
                 self.encounter()
 
     def encounter(self):
-        self.screen.show_encounter(self.current_room)
+        chosen_option = self.screen.show_encounter(self.current_room)
+        self.screen.animation_write_main(chosen_option["fail"])
 
     def fight(self):
         self.screen.animation_write_main(self.current_room.name)
@@ -30,7 +34,8 @@ class Game:
 def main(stdscr):
 
     game = Game(stdscr)
-    game.explore()
+    while True:
+        game.explore()
 
 
 def fight(monsters, player) -> bool:

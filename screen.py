@@ -4,87 +4,88 @@ import time
 from dungeon import EncounterRoom
 from dice import *
 
+
 class Screen:
     def __init__(self, stdscr):
         self.stdscr = stdscr
         self.HEIGHT, self.WIDTH = self.stdscr.getmaxyx()
+        self._initialize_screen()
 
+        # Window dimensions and positions
+        self.MAIN_WINDOW_HEIGHT = max(1, self.HEIGHT // 3)
+        self.MAIN_WINDOW_WIDTH = max(1, (self.WIDTH // 2) - 2)
+        self.HERO_WINDOW_HEIGHT = max(1, self.HEIGHT - 2)
+        self.HERO_WINDOW_WIDTH = max(1, (self.WIDTH // 2) - 2)
+
+        # Initialize windows
+        self.main_window = self._create_window(
+            self.MAIN_WINDOW_HEIGHT, self.MAIN_WINDOW_WIDTH, 2, 1, "Main Window Initialized")
+        self.second_window = self._create_window(
+            self.MAIN_WINDOW_HEIGHT, self.MAIN_WINDOW_WIDTH, self.MAIN_WINDOW_HEIGHT + 2, 1, "Second Window Initialized")
+        self.hero_window = self._create_window(
+            self.HERO_WINDOW_HEIGHT, self.HERO_WINDOW_WIDTH, 2, self.MAIN_WINDOW_WIDTH + 2)
+
+    def _initialize_screen(self):
         # Print dimensions to help with debugging
         self.stdscr.addnstr(0, 0, f"Screen dimensions: HEIGHT={
                             self.HEIGHT}, WIDTH={self.WIDTH}", 50)
         self.stdscr.refresh()
 
-        # Ensure the windows have valid dimensions
-        main_window_height = max(1, self.HEIGHT // 3)
-        main_window_width = max(1, self.WIDTH - 2)
+    def _create_window(self, height, width, starty, startx, init_text=None):
+        win = curses.newwin(height, width, starty, startx)
+        win.box()
+        if init_text:
+            win.addnstr(1, 1, init_text, width - 2)
+        win.refresh()
+        return win
 
-        self.main_window = curses.newwin(
-            main_window_height, main_window_width, 2, 1)
-        self.main_window.box()  # Draw a border around the window
-        self.main_window.addnstr(
-            1, 1, "Main Window Initialized", main_window_width - 2)
-        self.main_window.refresh()
-
-        self.second_window = curses.newwin(
-            main_window_height, main_window_width, main_window_height + 2, 1)
-        self.second_window.box()  # Draw a border around the window
-        self.second_window.addnstr(
-            1, 1, "Main Window Initialized", main_window_width - 2)
-        self.second_window.refresh()
-
-
-
+    def _write_text(self, window, text, animated=False):
+        window.clear()
+        window.box()
+        if animated:
+            for i in range(len(text)):
+                window.addstr(2, 1, text[:i+1])
+                window.box()
+                window.refresh()
+                time.sleep(0.05)
+        else:
+            window.addstr(2, 1, text)
+            window.box()
+        window.refresh()
 
     def write_main(self, text):
-        self.main_window.clear()
-        self.main_window.box()
-        self.main_window.addstr(2, 1, text)
-        self.main_window.refresh()
+        self._write_text(self.main_window, text)
 
     def animation_write_main(self, text):
-        self.main_window.clear()
-        self.main_window.box()
-        for i in range(len(text)):
-            self.main_window.addstr(2, 1, text[:i+1])
-            self.main_window.box()
-            self.main_window.refresh()
-            time.sleep(0.05)
+        self._write_text(self.main_window, text, animated=True)
 
     def write_second(self, text):
-        self.second_window.clear()
-        self.second_window.box()
-        self.second_window.addstr(2, 1, text)
-        self.second_window.refresh()
+        self._write_text(self.second_window, text)
 
     def animation_write_second(self, text):
-        self.second_window.clear()
-        self.second_window.box()
-        for i in range(len(text)):
-            self.second_window.addstr(2, 1, text[:i+1])
-            self.second_window.box()
-            self.second_window.refresh()
-            time.sleep(0.05)
+        self._write_text(self.second_window, text, animated=True)
 
     def choose(self, text, options):
         self.animation_write_main(text)
         s = ''
-        for i, option in enumerate(options):
+        for i, option in enumerate(options, start=1):
             s += f"{i} - {option} \n "
         res = []
         for i, option in enumerate(options):
             res.append(options[option])
-        self.animation_write_second(s) 
+        self.animation_write_second(s)
         key = self.stdscr.getkey()
-        while(int(key)>i):
+        while (int(key) > i):
             self.animation_write_main("please chose only from those options")
             key = self.stdscr.getkey()
-        return res[i]
+        return res[i-1]
+
 
     def show_encounter(self, encounter: EncounterRoom):
         self.animation_write_main(encounter.info)
         s = ''
 
-        for i, option in enumerate(encounter.options):
+        for i, option in enumerate(encounter.options, start=1):
             s += f"{i} - to {option["text"]} ({option["type"]})\n "
 
         self.animation_write_second(s)
@@ -95,11 +96,20 @@ class Screen:
         return encounter.options[i]
         
 
+def main(stdscr):
+    screen = Screen(stdscr)
+    screen.write_main("Hello, Main Window!")
+    screen.write_second("Hello, Second Window!")
+    screen.animation_write_main("Animating Main Window")
+    screen.animation_write_second("Animating Second Window")
+    choice = screen.choose("Choose an option:", [
+                           "Option 1", "Option 2", "Option 3"])
+    screen.write_main(f"You chose: {choice}")
 
 
-
-
-
+if __name__ == "__main__":
+    curses.wrapper(main)
+    
 # def main(stdscr):
 #     screen = Screen(stdscr)
 #     screen.write_main("asdasd")
