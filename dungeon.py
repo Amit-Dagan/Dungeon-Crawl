@@ -1,6 +1,7 @@
 from abc import ABC
 from random import choice
 from monster import *
+from Equipment import EquipmentFactory
 
 class Room(ABC):
     def __init__(
@@ -56,7 +57,7 @@ class MonsterRoom(Room):
 def EncounterRoomFactory() -> EncounterRoom:
     name = "Dark Room"
     info = "Old man in the room"
-    treature = "old ring"
+    treature = EquipmentFactory()
     option1 = {
         "text": "try to run away",
         "type": "Dexterity", 
@@ -88,6 +89,6 @@ def EncounterRoomFactory() -> EncounterRoom:
 
 def MonsterRoomFactory() -> MonsterRoom:
     name = "Scary Room"
-    treature = "10 gold"
+    treature = EquipmentFactory()
     monsters = [MonsterFactory() for _ in range(randint(1, 3))]
     return MonsterRoom(name, treature, monsters)

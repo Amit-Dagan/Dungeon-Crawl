@@ -91,24 +91,25 @@ class Sword(Equipment):
     def __init__(self):
         super().__init__("Sword", 0, 8, 0)
 
-    def sword_attack(self, character: Character, attack_bonus):
+    def sword_attack(self, character: Character, attack_bonus) -> str:
         natural_roll = die(20)
         attack_roll = natural_roll + attack_bonus
+        text = f"You rolled{natural_roll} + {attack_bonus} = {attack_roll}\n "
         if (natural_roll == 20):
-            print(f"It creets!")
+            text += (f"It creets!\n ")
             dmg = die(self.attack) + die(self.attack)
-            print(f"{character.name} health = {
-                character.health} - {dmg} = {character.health - dmg}")
+            text += (f"{character.name} health = {
+                character.health} - {dmg} = {character.health - dmg}\n")
             character.health -= dmg
         elif (attack_roll >= character.get_defense()):
-            print(f"It secceeds!")
+            text += (f"It secceeds!\n ")
             dmg = die(self.attack)
-            print(f"{character.name} health = {
-                character.health} - {dmg} = {character.health - dmg}")
+            text += (f"{character.name} health = {
+                character.health} - {dmg} = {character.health - dmg}\n ")
             character.health -= dmg
         else:
-                print("It dose not secceeds!")
-
+            text += ("It dose not secceeds!\n ")
+        return text
 
 class Armor(Equipment):
     def __init__(self):

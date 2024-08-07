@@ -75,7 +75,8 @@ class Screen:
     
         self.write_hero(player.get_stats())
 
-
+    def wait(self):
+        self.stdscr.getkey()
 
 
 

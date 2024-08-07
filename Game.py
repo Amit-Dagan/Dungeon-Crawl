@@ -17,7 +17,8 @@ class Game:
     def explore(self):
         self.screen.show_player(self.player)
         #self.current_room = self.dungeon.create_room()
-        self.current_room = EncounterRoomFactory()
+        #self.current_room = EncounterRoomFactory()
+        self.current_room = MonsterRoomFactory()
         match self.current_room:
             case MonsterRoom():
                 self.fight()
@@ -43,6 +44,37 @@ class Game:
         else: self.screen.animation_write_main(chosen_option["fail"])
 
     def fight(self):
+        monsters = self.current_room.monsters
+        character_initiative = [die(20), self.player]
+        monster_initiative = [[die(20), monster] for monster in monsters]
+        initiative = monster_initiative + [character_initiative]
+        initiative.sort(reverse=True, key=lambda x: x[0])
+        monsters_health = sum([monster.health for monster in monsters])
+        
+        while (monsters_health > 0):
+            monster_names = {i: f'{monster.name}, health {
+                monster.health}' for i, monster in enumerate(monsters)}
+            monster_info = {i: f'{monster.get_stats()}' for i,
+                            monster in enumerate(monsters)}
+            monster_dict = {monster.name: monster for monster in monsters}
+            for roll, entity in initiative:
+                self.screen.animation_write_main(f'{roll}, {entity.name}')
+                self.screen.wait()
+                if isinstance(entity, Monster):
+
+                    text = entity.attack_action(self.player)
+                    self.screen.animation_write_main(text=text)
+                    self.screen.wait()
+
+                if isinstance(entity, Player):
+
+                    x = self.screen.choose("choose a monster to attack", monster_dict)
+                    text = self.player.attack_action(x)
+                    self.screen.animation_write_main(text=text)
+
+                monsters_health = sum([monster.health for monster in monsters])
+
+
         self.screen.animation_write_main(self.current_room.name)
 
 def main(stdscr):

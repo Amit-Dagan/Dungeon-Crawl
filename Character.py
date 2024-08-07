@@ -8,7 +8,7 @@ from dice import die
 class Character:
     def __init__(
             self, name, health, attack, defense,
-            attack_strategy):
+            attack_strategy, xp):
         self.name = name
         self.health = health
         self.attack = attack
@@ -24,6 +24,7 @@ class Character:
             'fire': 0,
             'cold': 0
         }
+        self.xp = xp
 
 
     def get_stats(self):
@@ -42,40 +43,42 @@ class Character:
 
         return base_resistance + armor_resistance + seord_resistance
 
-    def attack_action(self, character):
-        print(f"{self.name} attack!")
-        self.attack_strategy(character=character, attack_bonus=self.attack)
-
+    def attack_action(self, character) -> str:
+        text = (f"{self.name} attack!") + '\n '
+        text += self.attack_strategy(character=character, attack_bonus=self.attack)
+        return text
 
 AttackFn = Callable[[Character, int], None]
 
 
 def poison_dart(character: Character, attack_bonus):
-    print(f"He uses Poison Dart on {character.name}")
+    text = f"He uses Poison Dart on {character.name}\n "
     attack_roll = die(20) + attack_bonus
     if (attack_roll >= character.get_defense()):
-        print(f"It secceeds!")
+        text += f"It secceeds!\n "
         dmg = die(4)
-        print(f"{character.name} health = {
-              character.health} - {dmg} = {character.health - dmg}")
+        text += f"{character.name} health = {
+              character.health} - {dmg} = {character.health - dmg}\n "
 
         character.health -= dmg
-        print(f"{character.name} is poisend!")
+        text += f"{character.name} is poisend!\n "
         character.status['poison'] = 2
     else:
-        print("It dose not secceeds!")
+        text += "It dose not secceeds!\n "
+    return text
 
 def bite(character: Character, attack_bonus):
-    print(f"He uses Bite on {character.name}")
+    text = (f"He uses Bite on {character.name}\n ")
     attack_roll = die(20) + attack_bonus
     if (attack_roll >= character.get_defense()):
-        print(f"It secceeds!")
+        text += (f"It secceeds!\n ")
         dmg = die(6)
-        print(f"{character.name} health = {
-              character.health} - {dmg} = {character.health - dmg}")
+        text += (f"{character.name} health = {
+              character.health} - {dmg} = {character.health - dmg}\n ")
 
         character.health -= dmg
     else:
-        print("It dose not secceeds!")
+        text += ("It dose not secceeds!\n ")
+    return text
 
 
