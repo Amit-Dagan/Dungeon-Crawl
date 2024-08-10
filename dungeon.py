@@ -2,6 +2,8 @@ from abc import ABC
 from random import choice
 from monster import *
 from Equipment import EquipmentFactory
+from typing import List
+
 
 class Room(ABC):
     def __init__(
@@ -43,7 +45,7 @@ class EncounterRoom(Room):
 
 
 class MonsterRoom(Room):
-    def __init__(self, name, treature, monsters):
+    def __init__(self, name, treature, monsters: List[Monster]): 
         super().__init__(name, treature)
         self.monsters = monsters
     def describe(self):
@@ -52,7 +54,13 @@ class MonsterRoom(Room):
         """
         return describtion
 
+    def update_monsters(self):
+        self.monsters = [
+            monster for monster in self.monsters if monster.health > 0]
 
+    def get_xp(self) -> int:
+        xp = sum(monster.xp for monster in self.monsters if monster.health <= 0)
+        return xp
 
 def EncounterRoomFactory() -> EncounterRoom:
     name = "Dark Room"

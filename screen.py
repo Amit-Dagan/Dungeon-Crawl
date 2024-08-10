@@ -1,5 +1,6 @@
 import curses
 from curses import wrapper
+from curses.textpad import Textbox
 import time
 from dungeon import EncounterRoom
 from dice import *
@@ -72,12 +73,26 @@ class Screen:
         self._write_text(self.hero_window, text, animated=True)
 
     def show_player(self, player: Player):
-    
         self.write_hero(player.get_stats())
 
     def wait(self):
         self.stdscr.getkey()
 
+    def get_text(self, text):
+        self.animation_write_main(text=text)
+        self.second_window.clear()
+        self.write_second("Name: ")
+        input_window = curses.newwin(1, 10, self.MAIN_WINDOW_HEIGHT + 4, 8)
+
+        input_window.refresh()
+        box = Textbox(input_window)
+        box.edit()
+        text = box.gather()
+        self.second_window.clear()
+        self.second_window.box()
+        self.second_window.refresh()
+
+        return text
 
 
     def choose(self, text, options):

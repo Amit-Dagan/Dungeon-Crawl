@@ -13,7 +13,7 @@ class Monster(Character, metaclass=ABCMeta):
 class Goblin(Monster):
     def __init__(self):
         super().__init__(
-            name= "Rat", health=5, attack=5, 
+            name= "Goblin", health=5, attack=5, 
             defense=5, attack_strategy= poison_dart, xp= 200)
 
 

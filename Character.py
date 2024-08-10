@@ -28,7 +28,7 @@ class Character:
 
 
     def get_stats(self):
-        return f"Character: {self.name}, Health: {self.health}, Attack: {self.attack}, Defense: {self.defense} \n"
+        return f"Character: {self.name}, Health: {self.health},\n Attack: {self.attack}, Defense: {self.defense}, XP= {self.xp} \n"
 
     def get_attack(self):
         return self.attack 
