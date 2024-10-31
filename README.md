@@ -1,5 +1,6 @@
 # Dungeon-Crawl
-Dungeon Crawl game as a design pattern exercise
+Dungeon Crawl game as a design pattern exercise.
+
 those diagrams are not updated,
 but this project has been abandoned for another one
 
