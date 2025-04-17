@@ -5,6 +5,7 @@ from Player import *
 from screen import *
 from town import *
 
+
 class Game:
     def __init__(self, stdscr):
         self.screen = Screen(stdscr)
@@ -15,16 +16,19 @@ class Game:
         self.dungeon = Dungeon("First level")
         self.current_room = None
         self.town = Town()
-        
 
     def explore(self):
         self.screen.show_player(self.player)
-        #self.current_room = self.dungeon.create_room()
-        #self.current_room = EncounterRoomFactory()
-        self.current_room = MonsterRoomFactory()
+        # Create a room using the dungeon's room factory
+        self.current_room = self.dungeon.create_room()
+
         match self.current_room:
             case MonsterRoom():
+                self.screen.animation_write_main(self.current_room.describe())
                 self.fight()
+                # After fight, check for treasure
+                if self.player.health > 0:
+                    self.get_treasure()
             case EncounterRoom():
                 self.encounter()
 
@@ -34,17 +38,39 @@ class Game:
         match chosen_option["type"]:
             case "charisma":
                 roll = roll + self.player.charisma
-
             case "dexterity":
                 roll = roll + self.player.dexterity
-
             case "wisdom":
                 roll = roll + self.player.wisdom
 
         if (roll >= chosen_option["DC"]):
             self.screen.animation_write_main(chosen_option["succeed"])
+            # Maybe get treasure on success
+            if "treature" in chosen_option and chosen_option["treature"]:
+                self.get_treasure()
+        else:
+            self.screen.animation_write_main(chosen_option["fail"])
 
-        else: self.screen.animation_write_main(chosen_option["fail"])
+    def get_treasure(self):
+        if self.current_room.treature:
+            self.screen.animation_write_main(
+                f"You found treasure: {self.current_room.treature.get_name()}")
+            # Add treasure to inventory or equip it
+            equip = self.screen.choose(
+                "Equip treasure?", {"Yes": True, "No": False})
+            if equip:
+                if isinstance(self.current_room.treature, Sword):
+                    self.player.update_sword(self.current_room.treature)
+                elif isinstance(self.current_room.treature, Armor):
+                    self.player.update_armor(self.current_room.treature)
+                self.screen.animation_write_main(
+                    f"You equipped {self.current_room.treature.get_name()}")
+            else:
+                self.player.inventory.append(self.current_room.treature)
+                self.screen.animation_write_main(
+                    f"Added {self.current_room.treature.get_name()} to inventory")
+            self.screen.show_player(self.player)
+            self.screen.wait()
 
     def fight(self):
         monsters = self.current_room.monsters
@@ -52,217 +78,135 @@ class Game:
         monster_initiative = [[die(20), monster] for monster in monsters]
         initiative = monster_initiative + [character_initiative]
         initiative.sort(reverse=True, key=lambda x: x[0])
-        
-        while (self.current_room.monsters):
-            monster_names = {i: f'{monster.name}, health {
-                monster.health}' for i, monster in enumerate(monsters)}
-            monster_info = {i: f'{monster.get_stats()}' for i,
-                            monster in enumerate(monsters) }
-            monster_dict = {
-                f"{i[1].name} with hp:{i[1].health}. init: {i[0]}":
-                i[1] for i in monster_initiative if i[1].health > 0}
-            for roll, entity in initiative:
-                self.screen.animation_write_main(f'{roll}, {entity.name}')
-                self.screen.wait()
-                if isinstance(entity, Monster):
 
+        # Continue fighting until all monsters are defeated or player is dead
+        while self.current_room.monsters and self.player.health > 0:
+            # Create a dictionary of monsters for selection
+            monster_dict = {
+                f"{monster.name} (HP:{monster.health})": monster
+                for monster in self.current_room.monsters
+            }
+
+            # Process each entity's turn in initiative order
+            for roll, entity in initiative:
+                # Skip entities that are dead
+                if isinstance(entity, Monster) and entity.health <= 0:
+                    continue
+                if isinstance(entity, Player) and entity.health <= 0:
+                    break
+
+                self.screen.animation_write_main(
+                    f'Initiative: {roll}, {entity.name}')
+                self.screen.wait()
+
+                # Monster's turn
+                if isinstance(entity, Monster) and entity.health > 0:
                     text = entity.attack_action(self.player)
                     self.screen.animation_write_main(text=text)
                     self.screen.show_player(self.player)
                     self.screen.wait()
 
-                if isinstance(entity, Player):
+                    # Check if player is dead
+                    if self.player.health <= 0:
+                        self.screen.animation_write_main(
+                            "You have been defeated!")
+                        self.screen.wait()
+                        return False
 
-                    x = self.screen.choose("choose a monster to attack", monster_dict)
-                    text = self.player.attack_action(x)
-                    self.screen.animation_write_main(text=text)
-                    self.screen.show_player(self.player)
-                    self.screen.wait()
+                # Player's turn
+                if isinstance(entity, Player) and self.current_room.monsters:
+                    if len(monster_dict) > 0:
+                        target = self.screen.choose(
+                            "Choose a monster to attack:", monster_dict)
+                        text = self.player.attack_action(target)
+                        self.screen.animation_write_main(text=text)
+                        self.screen.show_player(self.player)
+                        self.screen.wait()
 
-                self.player.xp += self.current_room.get_xp()
-                self.current_room.update_monsters()
+                        # Update monsters list after player's attack
+                        self.current_room.update_monsters()
+                        # Recalculate monster_dict for next round
+                        monster_dict = {
+                            f"{monster.name} (HP:{monster.health})": monster
+                            for monster in self.current_room.monsters
+                        }
 
+                        # Check if all monsters are defeated
+                        if not self.current_room.monsters:
+                            xp_gained = self.current_room.get_xp()
+                            self.player.xp += xp_gained
+                            self.screen.animation_write_main(
+                                f"All monsters defeated! You gained {xp_gained} XP.")
+                            self.screen.show_player(self.player)
+                            self.screen.wait()
+                            return True
 
-        self.screen.animation_write_main(self.current_room.name)
+            # Update monster list after each round
+            self.current_room.update_monsters()
+
+        return self.player.health > 0  # Return True if player survived
+
+    def visit_town(self):
+        self.screen.animation_write_main("You enter the town...")
+        # Implement town visit logic
+        options = {"Shop": self.shop, "Rest": self.rest, "Leave": lambda: None}
+        choice = self.screen.choose("What would you like to do?", options)
+        if choice:
+            choice()
+
+    def shop(self):
+        self.screen.animation_write_main("Welcome to the shop!")
+        items = {
+            f"{item.get_name()} - {item.get_stats()}": item for item in self.town.items}
+        items["Leave"] = None
+
+        while True:
+            item = self.screen.choose("What would you like to buy?", items)
+            if item is None:
+                break
+
+            if self.player.gold >= 10:  # Simple price system
+                self.player.gold -= 10
+                self.player.inventory.append(item)
+                self.screen.animation_write_main(
+                    f"You purchased {item.get_name()}")
+                self.town.items.remove(item)
+                items.pop(next(k for k, v in items.items() if v == item))
+            else:
+                self.screen.animation_write_main("Not enough gold!")
+
+            if not self.town.items:
+                self.screen.animation_write_main("Shop is out of items!")
+                break
+
+    def rest(self):
+        self.screen.animation_write_main("You rest and recover your health.")
+        self.player.health = 25  # Reset to max health
+        self.screen.show_player(self.player)
+
 
 def main(stdscr):
-
     game = Game(stdscr)
-    while True:
-        game.explore()
+    game_over = False
 
-
-def fight(monsters, player) -> bool:
-    character_initiative = [die(20), player]
-    monster_initiative = [[die(20), monster] for monster in monsters]
-    initiative = monster_initiative + [character_initiative]
-    initiative.sort(reverse=True, key=lambda x: x[0])
-    monsters_health = sum([monster.health for monster in monsters])
-
-    while (monsters_health > 0):
-        monster_names = {i: f'{monster.name}, health {
-            monster.health}' for i, monster in enumerate(monsters)}
-        monster_info = {i: f'{monster.get_stats()}' for i,
-                        monster in enumerate(monsters)}
-
-        for roll, entity in initiative:
-            screen.animation_write_main(f'{roll}, {entity.name}')
-            if isinstance(entity, Monster):
-                entity.attack_action(player)
-            if isinstance(entity, Player):
-                print(f"you are fighting {monster_names}")
-                print("choose a monster to attack")
-                x = input()
-                player.attack_action(monsters[int(x)-1])
-
-        monsters_health = sum([monster.health for monster in monsters])
-    return True
+    while not game_over:
+        # Main game loop
+        options = {"Explore Dungeon": 1, "Visit Town": 2, "Quit": 3}
+        choice = game.screen.choose("What would you like to do?", options)
+        game.screen.animation_write_hero(choice)
+        game.screen.wait()
+        if choice == 1:
+            game.explore()
+            # Check if player died
+            if game.player.health <= 0:
+                game.screen.animation_write_main("Game Over!")
+                game_over = True
+        elif choice == 2:
+            game.visit_town()
+        elif choice == 3:
+            game.screen.animation_write_main("Thank you for playing!")
+            game_over = True
 
 
 if __name__ == "__main__":
-
     wrapper(main)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# from Equipment import *
-# from Character import *
-# from dungeon import *
-# from Player import *
-# from screen import *
-
-
-# def main():
-
-#     room_factories = [EncounterRoomFactory, MonsterRoomFactory]
-#     dungeon = Dungeon("First lavel", room_factories)
-
-#     player = Fighter("Ser Holigan")
-
-#     while True:
-#         current_room = dungeon.create_room()
-#         match current_room:
-#             case MonsterRoom():
-#                 print(current_room.describe())
-#                 if (fight(current_room.monsters, player)):
-#                     print("hey")
-#                     # choose_treature()
-#                 # break
-#             case EncounterRoom():
-#                 print(current_room.name)
-
-
-
-
-# def fight(monsters, player) -> bool:
-#     character_initiative = [die(20), player]
-#     monster_initiative = [[die(20), monster] for monster in monsters]
-#     initiative = monster_initiative + [character_initiative]
-#     initiative.sort(reverse=True, key=lambda x: x[0])
-#     monsters_health = sum([monster.health for monster in monsters])
-
-#     while (monsters_health > 0):
-#         monster_names = {i: f'{monster.name}, health {
-#             monster.health}' for i, monster in enumerate(monsters)}
-#         monster_info = {i: f'{monster.get_stats()}' for i,
-#                         monster in enumerate(monsters)}
-
-#         for roll, entity in initiative:
-#             print(f'{roll}, {entity.name}')
-#             if isinstance(entity, Monster):
-#                 entity.attack_action(player)
-#             if isinstance(entity, Player):
-#                 print(f"you are fighting {monster_names}")
-#                 print("choose a monster to attack")
-#                 x = input()
-#                 player.attack_action(monsters[int(x)-1])
-
-#         monsters_health = sum([monster.health for monster in monsters])
-#     return True
-
-
-
-# if __name__ == "__main__":
-
-#     main()
-
-
-"""
-print(character_a.get_stats())
-print('\n')
-print(f"Character Attack with {character_a.sword.get_name()} and deals {
-      character_a.attack_action(14)}")
-print(f"Character Defense with {character_a.armor.get_name()} and takes {
-      character_a.defense_action(15)} damage")
-
-print('\n')
-
-print(character_b.get_stats())
-print('\n')
-
-print(f"Character Attack with {character_b.sword.get_name()} and deals {
-      character_b.attack_action(14)}")
-print(f"Character Defense with {character_b.armor.get_name()} and takes {
-      character_b.defense_action(15)} damage")
-"""
-
-"""
-enter a room
-monster room
-choose a monster
-choose an attack
-while monster alive:
-    attack roll:
-        success:
-            attack action
-            dead?:
-                treature
-        failure -> maybe something?  
-
-    each monster attack:
-        success:
-            attack action
-            charecter dead?:
-                End
-        failure -> maybe something?   
-    
-        
-enter a room
-encounet room
-print info
-choose an action
-roll:
-    success:
-        treature
-    failure:
-        something     
-"""

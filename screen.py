@@ -70,7 +70,7 @@ class Screen:
         self._write_text(self.hero_window, text)
 
     def animation_write_hero(self, text):
-        self._write_text(self.hero_window, text, animated=True)
+        self._write_text(self.hero_window, str(text), animated=True)
 
     def show_player(self, player: Player):
         self.write_hero(player.get_stats())
@@ -101,7 +101,7 @@ class Screen:
         for i, option in enumerate(options, start=1):
             s += f"{i} - {option} \n "
         res = []
-        for i, option in enumerate(options):
+        for option in options:
             res.append(options[option])
         self.animation_write_second(s)
         key = self.stdscr.getkey()
@@ -110,7 +110,7 @@ class Screen:
         while (key not in valid_choices):
             self.animation_write_main("please chose only from those options")
             key = self.stdscr.getkey()
-        return res[i-1]
+        return res[int(key)-1]
 
 
     def show_encounter(self, encounter: EncounterRoom):
