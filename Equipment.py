@@ -132,7 +132,226 @@ def EquipmentFactory(type = "normal") -> Equipment:
 
     return equipment
 
+# Add to Equipment.py
 
+
+class Staff(Equipment):
+    def __init__(self):
+        super().__init__("Staff", 0, 5, 0)
+
+    def staff_attack(self, character: Character, attack_bonus) -> str:
+        natural_roll = die(20)
+        attack_roll = natural_roll + attack_bonus
+        text = f"You cast a spell with your {self.name}!\n"
+        text += f"You rolled {natural_roll} + {attack_bonus} = {attack_roll}\n "
+        if (natural_roll == 20):
+            text += (f"Critical spell hit!\n ")
+            dmg = die(self.attack) + die(self.attack)
+            text += (f"{character.name} health = {character.health} - {dmg} = {character.health - dmg}\n")
+            character.health -= dmg
+        elif (attack_roll >= character.get_defense()):
+            text += (f"The spell hits!\n ")
+            dmg = die(self.attack)
+            text += (f"{character.name} health = {character.health} - {dmg} = {character.health - dmg}\n ")
+            character.health -= dmg
+        else:
+            text += ("The spell fizzles...\n ")
+        return text
+
+
+class Bow(Equipment):
+    def __init__(self):
+        super().__init__("Bow", 0, 6, 0)
+
+    def bow_attack(self, character: Character, attack_bonus) -> str:
+        natural_roll = die(20)
+        attack_roll = natural_roll + attack_bonus
+        text = f"You fire an arrow from your {self.name}!\n"
+        text += f"You rolled {natural_roll} + {attack_bonus} = {attack_roll}\n "
+        if (natural_roll == 20):
+            text += (f"Critical hit!\n ")
+            dmg = die(self.attack) + die(self.attack)
+            text += (f"{character.name} health = {character.health} - {dmg} = {character.health - dmg}\n")
+            character.health -= dmg
+        elif (attack_roll >= character.get_defense()):
+            text += (f"The arrow hits!\n ")
+            dmg = die(self.attack)
+            text += (f"{character.name} health = {character.health} - {dmg} = {character.health - dmg}\n ")
+            character.health -= dmg
+        else:
+            text += ("The arrow misses!\n ")
+        return text
+
+
+class Mace(Equipment):
+    def __init__(self):
+        super().__init__("Mace", 0, 7, 0)
+
+    def mace_attack(self, character: Character, attack_bonus) -> str:
+        natural_roll = die(20)
+        attack_roll = natural_roll + attack_bonus
+        text = f"You swing your {self.name}!\n"
+        text += f"You rolled {natural_roll} + {attack_bonus} = {attack_roll}\n "
+        if (natural_roll == 20):
+            text += (f"Critical smash!\n ")
+            dmg = die(self.attack) + die(self.attack)
+            text += (f"{character.name} health = {character.health} - {dmg} = {character.health - dmg}\n")
+            character.health -= dmg
+        elif (attack_roll >= character.get_defense()):
+            text += (f"The mace connects!\n ")
+            dmg = die(self.attack)
+            text += (f"{character.name} health = {character.health} - {dmg} = {character.health - dmg}\n ")
+            character.health -= dmg
+        else:
+            text += ("The attack misses!\n ")
+        return text
+
+
+class Dagger(Equipment):
+    def __init__(self):
+        super().__init__("Dagger", 0, 4, 0)
+
+    def dagger_attack(self, character: Character, attack_bonus) -> str:
+        natural_roll = die(20)
+        attack_roll = natural_roll + attack_bonus + 2  # Daggers are easier to hit with
+        text = f"You stab with your {self.name}!\n"
+        text += f"You rolled {natural_roll} + {attack_bonus + 2} = {attack_roll}\n "
+        if (natural_roll == 20 or natural_roll == 19):  # Daggers have higher crit chance
+            text += (f"Critical stab!\n ")
+            dmg = die(self.attack) + die(self.attack)
+            text += (f"{character.name} health = {character.health} - {dmg} = {character.health - dmg}\n")
+            character.health -= dmg
+        elif (attack_roll >= character.get_defense()):
+            text += (f"The dagger strikes!\n ")
+            dmg = die(self.attack)
+            text += (f"{character.name} health = {character.health} - {dmg} = {character.health - dmg}\n ")
+            character.health -= dmg
+        else:
+            text += ("The attack misses!\n ")
+        return text
+
+
+class Robe(Equipment):
+    def __init__(self):
+        super().__init__("Robe", 0, 0, 2)
+        self.resistence['fire'] = 1
+        self.resistence['cold'] = 1
+
+
+class LeatherArmor(Equipment):
+    def __init__(self):
+        super().__init__("Leather Armor", 0, 0, 4)
+        self.resistence['poison'] = 1
+
+
+class ChainMail(Equipment):
+    def __init__(self):
+        super().__init__("Chain Mail", 0, 0, 6)
+
+
+class PlateMail(Equipment):
+    def __init__(self):
+        super().__init__("Plate Mail", 0, 0, 8)
+        self.resistence['fire'] = 1
+
+
+# New decorators for more equipment variety
+class PoisonDecorator(EquipmentDecorator):
+    def __init__(self, equipment):
+        super().__init__("Poison", 0, 2, 0, equipment)
+        self.equipment = equipment
+        self.resistence['poison'] = 2
+
+    def get_attack(self):
+        # Special override for poison weapons
+        base_attack = super().get_attack()
+        if isinstance(self.equipment, Sword) or isinstance(self.equipment, Dagger):
+            return base_attack + 1  # Extra bonus for bladed weapons
+        return base_attack
+
+
+class HolyDecorator(EquipmentDecorator):
+    def __init__(self, equipment):
+        super().__init__("Holy", 0, 2, 2, equipment)
+        self.equipment = equipment
+
+
+class ArcaneDecorator(EquipmentDecorator):
+    def __init__(self, equipment):
+        super().__init__("Arcane", 0, 3, 0, equipment)
+        self.equipment = equipment
+        # Arcane items boost spell effectiveness
+        if isinstance(self.equipment, Staff):
+            self.attack += 2
+
+
+class VampiricDecorator(EquipmentDecorator):
+    def __init__(self, equipment):
+        super().__init__("Vampiric", 0, 1, 0, equipment)
+        self.equipment = equipment
+        # Vampiric items have life drain but are weaker against undead
+
+
+# Expanded EquipmentFactory with more variety
+def EquipmentFactory(type="normal") -> Equipment:
+    equipment_types = {
+        "weapon": [Sword, Staff, Bow, Mace, Dagger],
+        "armor": [Armor, Robe, LeatherArmor, ChainMail, PlateMail]
+    }
+
+    decorators = {
+        "common": [ColdDecorator, FireDecorator],
+        "uncommon": [MightDecorator, LightDecorator, PoisonDecorator],
+        "rare": [HolyDecorator, ArcaneDecorator, VampiricDecorator]
+    }
+
+    # Choose equipment category (weapon or armor)
+    category = random.choice(list(equipment_types.keys()))
+
+    # Choose specific equipment type from that category
+    equipment_class = random.choice(equipment_types[category])
+    equipment = equipment_class()
+
+    # Add decorators based on rarity
+    if type == "normal":
+        # No decorators for normal equipment
+        pass
+    elif type == "uncommon":
+        decorator = random.choice(decorators["common"])
+        equipment = decorator(equipment)
+    elif type == "rare":
+        decorator = random.choice(
+            decorators["common"] + decorators["uncommon"])
+        equipment = decorator(equipment)
+    elif type == "epic":
+        # First decorator from common or uncommon
+        decorator1 = random.choice(
+            decorators["common"] + decorators["uncommon"])
+        equipment = decorator1(equipment)
+
+        # Second decorator from any category (avoid duplicate categories)
+        all_decorators = []
+        for decorator_list in decorators.values():
+            all_decorators.extend(decorator_list)
+        # Remove the already used decorator from choices
+        all_decorators = [d for d in all_decorators if d != decorator1]
+        decorator2 = random.choice(all_decorators)
+        equipment = decorator2(equipment)
+    elif type == "legendary":
+        # First decorator from rare
+        decorator1 = random.choice(decorators["rare"])
+        equipment = decorator1(equipment)
+
+        # Second decorator from any category
+        all_decorators = []
+        for decorator_list in decorators.values():
+            all_decorators.extend(decorator_list)
+        # Remove the already used decorator from choices
+        all_decorators = [d for d in all_decorators if d != decorator1]
+        decorator2 = random.choice(all_decorators)
+        equipment = decorator2(equipment)
+
+    return equipment
 
 ### testing ###
 # normal_eq = EquipmentFactory()

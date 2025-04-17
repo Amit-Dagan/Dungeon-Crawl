@@ -9,8 +9,7 @@ from town import *
 class Game:
     def __init__(self, stdscr):
         self.screen = Screen(stdscr)
-        classes = {"Fighter": Fighter, "Monk": Fighter, "Wizard": Fighter}
-        player_class = self.screen.choose("choose a hero", classes)
+        player_class = self.screen.choose("choose a hero", CLASSES)
         name = self.screen.get_text("Give your hero a name")
         self.player = player_class(name)
         self.dungeon = Dungeon("First level")
