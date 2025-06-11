@@ -94,18 +94,16 @@ class Sword(Equipment):
     def sword_attack(self, character: Character, attack_bonus) -> str:
         natural_roll = die(20)
         attack_roll = natural_roll + attack_bonus
-        text = f"You rolled{natural_roll} + {attack_bonus} = {attack_roll}\n "
+        text = f"You rolled {natural_roll} + {attack_bonus} = {attack_roll}\n"
         if (natural_roll == 20):
             text += (f"It creets!\n ")
             dmg = die(self.attack) + die(self.attack)
-            text += (f"{character.name} health = {
-                character.health} - {dmg} = {character.health - dmg}\n")
+            text += (f"{character.name} health = {character.health} - {dmg} = {character.health - dmg}\n")
             character.health -= dmg
         elif (attack_roll >= character.get_defense()):
             text += (f"It secceeds!\n ")
             dmg = die(self.attack)
-            text += (f"{character.name} health = {
-                character.health} - {dmg} = {character.health - dmg}\n ")
+            text += (f"{character.name} health = {character.health} - {dmg} = {character.health - dmg}\n ")
             character.health -= dmg
         else:
             text += ("It dose not secceeds!\n ")
