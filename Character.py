@@ -57,8 +57,7 @@ def poison_dart(character: Character, attack_bonus):
     if (attack_roll >= character.get_defense()):
         text += f"It secceeds!\n "
         dmg = die(4)
-        text += f"{character.name} health = {
-              character.health} - {dmg} = {character.health - dmg}\n "
+        text += f"{character.name} health = {character.health} - {dmg} = {character.health - dmg}\n"
 
         character.health -= dmg
         text += f"{character.name} is poisend!\n "
@@ -73,8 +72,7 @@ def bite(character: Character, attack_bonus):
     if (attack_roll >= character.get_defense()):
         text += (f"It secceeds!\n ")
         dmg = die(6)
-        text += (f"{character.name} health = {
-              character.health} - {dmg} = {character.health - dmg}\n ")
+        text += (f"{character.name} health = {character.health} - {dmg} = {character.health - dmg}\n ")
 
         character.health -= dmg
     else:

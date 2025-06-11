@@ -38,8 +38,7 @@ class EncounterRoom(Room):
     def describe(self):
         description = f"{self.info}\nOptions:"
         for i, option in enumerate(self.options, start=1):
-            description += f"\n{i}. {option['text']
-                                     } (DC {option['DC']} {option['type']})"
+            description += f"\n{i}. {option['text']} (DC {option['DC']} {option['type']})"
         return description
     
 

@@ -28,8 +28,7 @@ class Screen:
 
     def _initialize_screen(self):
         # Print dimensions to help with debugging
-        self.stdscr.addnstr(0, 0, f"Screen dimensions: HEIGHT={
-                            self.HEIGHT}, WIDTH={self.WIDTH}", 50)
+        self.stdscr.addnstr(0, 0, f"Screen dimensions: HEIGHT={self.HEIGHT}, WIDTH={self.WIDTH}", 50)
         self.stdscr.refresh()
 
     def _create_window(self, height, width, starty, startx, init_text=None):
@@ -118,7 +117,7 @@ class Screen:
         s = ''
 
         for i, option in enumerate(encounter.options, start=1):
-            s += f"{i} - to {option["text"]} ({option["type"]})\n "
+            s += f"{i} - to {option['text']} ({option['type']})\n "
 
         self.animation_write_second(s)
         key = self.stdscr.getkey()
